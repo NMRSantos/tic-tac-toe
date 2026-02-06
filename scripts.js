@@ -30,14 +30,9 @@ let gameController = (function () {
     let currentPlayer = player1;
     let gameOver = false;
     const winningCombos = [
-        [[0,0], [0,1], [0,2]],
-        [[1,0], [1,1], [1,2]],
-        [[2,0], [2,1], [2,2]],
-        [[0,0], [1,0], [2,0]],
-        [[0,1], [1,1], [2,1]],
-        [[0,2], [1,2], [2,2]],
-        [[0,0], [1,1], [2,2]],
-        [[0,2], [1,1], [2,0]]]
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]]
     ;
     
     const playTurn = (position) => {
@@ -45,6 +40,7 @@ let gameController = (function () {
 
         gameBoard.setMark(position, currentPlayer.marker)
         console.log(gameBoard.getBoard())
+        checkForWin(currentPlayer.marker)
         switchPlayer()
     };
 
@@ -56,9 +52,18 @@ let gameController = (function () {
         }
     };
 
-    const checkForWin = (marker) => {
-
+const checkForWin = (marker) => {
+    const board = gameBoard.getBoard();
+    for (let i = 0; i < winningCombos.length; i++) {
+        const [a, b, c] = winningCombos[i];
+        if (board[a] === marker && board[b] === marker && board[c] === marker) {
+            gameOver = true;
+            console.log(`${currentPlayer.name} won!`);
+            return true;
+        }
     }
+    return false;
+}
 
     return {
         playTurn
