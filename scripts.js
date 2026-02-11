@@ -78,3 +78,44 @@ let gameController = (function () {
         playTurn
     };
 })();
+
+let display = (function() {
+    const header = document.querySelector(".header");
+    const gameBoard = document.querySelector(".gameboard");
+    const reset = document.querySelector(".reset");
+
+
+        let render = () => {
+            function createSquare(row) {
+            const square = document.createElement("div");
+            square.className = "square";
+            row.appendChild(square);
+            square.style.height = "10rem";
+            square.style.width = "10rem";
+            square.style.border = "solid black 1px";
+            square.className = "square";
+            };
+
+            function createRow() {
+                const row = document.createElement("div");
+                row.className = "row";
+                gameBoard.appendChild(row);
+                for (let i = 0; i < 3; i++) {
+                    createSquare(row);
+                };
+            };
+
+            function createGrid() {
+                for (let i = 0; i < 3; i++) {
+                    createRow();
+                };
+        };
+        
+        createGrid()
+    };
+
+    
+    return {
+        render
+    };
+})();
