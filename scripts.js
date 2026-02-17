@@ -81,87 +81,50 @@ let gameController = (function () {
     };
 })();
 
+
 let display = (function() {
     const header = document.querySelector(".header");
     const gameUi = document.querySelector(".gameUi");
     const reset = document.querySelector(".reset");
-
-
-        let render = () => {
-            function createSquare(row) {
-                const square = document.createElement("div");
-                square.className = "square";
-                row.appendChild(square);
-                square.style.height = "10rem";
-                square.style.width = "10rem";
-                square.style.border = "solid black 1px";
-                square.className = "square";
-            };
-
-            function createRow() {
-                const row = document.createElement("div");
-                row.className = "row";
-                gameUi.appendChild(row);
-                for (let i = 0; i < 3; i++) {
-                    createSquare(row);
-                };
-            };
-
-            function createGrid() {
-                for (let i = 0; i < 3; i++) {
-                    createRow();
-                };
-            };
-        createGrid()
-        };
-
     
-    return {
-        render
-    };
-})();
-
-let debugDisplay = (function() {
-    const header = document.querySelector(".header");
-    const gameUi = document.querySelector(".gameUi");
-    const reset = document.querySelector(".reset");
-    let squareIdNumber = 0;
-
     let render = () => {
-        function createSquare(row) {
+        
+        function createSquare(row, columnNumber, rowNumber) {
+            let squareClassNumber = columnNumber * 3 + rowNumber;
             const square = document.createElement("div");
-            square.className = "square";
-            row.appendChild(square);
+            
+            square.addEventListener('click', () => {
+                let board = gameBoard.getBoard();
+                gameController.playTurn(squareClassNumber);
+                if(board[squareClassNumber] == "X") {
+                    square.style.border = "solid red 1px"
+                    console.log(board[squareClassNumber]);
+                } else if (board[squareClassNumber] == "O") {
+                    square.style.border = "solid blue 1px";
+                    console.log(board[squareClassNumber])
+                }
+            });
+
+            square.className = `square${squareClassNumber}`;
             square.style.height = "10rem";
             square.style.width = "10rem";
             square.style.border = "solid black 1px";
-            square.className = "square";
-            square.id = `square${squareIdNumber}`;
-            squareIdNumber++
+            row.appendChild(square);
         };
-        function createRow() {
+        function createRow(rowNumber) {
             const row = document.createElement("div");
             row.className = "row";
             gameUi.appendChild(row);
-            for (let i = 0; i < 3; i++) {
-                createSquare(row);
+            for (let columnNumber = 0; columnNumber < 3; columnNumber++) {
+                createSquare(row, columnNumber, rowNumber);
             };
         };
         function createGrid() {
-            for (let i = 0; i < 3; i++) {
-                createRow();
+            for (let rowNumber = 0; rowNumber < 3; rowNumber++) {
+                createRow(rowNumber);
             };
         };
         createGrid()
-        
-        let board = gameBoard.getBoard();
-        board.forEach((marker) => {
-            if(marker === "X") {
-                console.log("this spot has a X")
-            } if (marker === "O") {
-                console.log("this spot has a O")
-            } else console.log("this spot is empty")
-        });
     };
     return {
         render
