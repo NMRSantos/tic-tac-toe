@@ -10,10 +10,12 @@ let gameBoard = (function () {
 
     let initBoard = () => {
         board = ["","","","","","","","",""];
+        console.log(board)
     };
-
     initBoard();
+
     const getBoard = () => board;
+    
     const setMark = (position, marker) => {
         board[position] = marker;
     };
@@ -81,25 +83,25 @@ let gameController = (function () {
 
 let display = (function() {
     const header = document.querySelector(".header");
-    const gameBoard = document.querySelector(".gameboard");
+    const gameUi = document.querySelector(".gameUi");
     const reset = document.querySelector(".reset");
 
 
         let render = () => {
             function createSquare(row) {
-            const square = document.createElement("div");
-            square.className = "square";
-            row.appendChild(square);
-            square.style.height = "10rem";
-            square.style.width = "10rem";
-            square.style.border = "solid black 1px";
-            square.className = "square";
+                const square = document.createElement("div");
+                square.className = "square";
+                row.appendChild(square);
+                square.style.height = "10rem";
+                square.style.width = "10rem";
+                square.style.border = "solid black 1px";
+                square.className = "square";
             };
 
             function createRow() {
                 const row = document.createElement("div");
                 row.className = "row";
-                gameBoard.appendChild(row);
+                gameUi.appendChild(row);
                 for (let i = 0; i < 3; i++) {
                     createSquare(row);
                 };
@@ -109,12 +111,58 @@ let display = (function() {
                 for (let i = 0; i < 3; i++) {
                     createRow();
                 };
-        };
-        
+            };
         createGrid()
-    };
+        };
 
     
+    return {
+        render
+    };
+})();
+
+let debugDisplay = (function() {
+    const header = document.querySelector(".header");
+    const gameUi = document.querySelector(".gameUi");
+    const reset = document.querySelector(".reset");
+    let squareIdNumber = 0;
+
+    let render = () => {
+        function createSquare(row) {
+            const square = document.createElement("div");
+            square.className = "square";
+            row.appendChild(square);
+            square.style.height = "10rem";
+            square.style.width = "10rem";
+            square.style.border = "solid black 1px";
+            square.className = "square";
+            square.id = `square${squareIdNumber}`;
+            squareIdNumber++
+        };
+        function createRow() {
+            const row = document.createElement("div");
+            row.className = "row";
+            gameUi.appendChild(row);
+            for (let i = 0; i < 3; i++) {
+                createSquare(row);
+            };
+        };
+        function createGrid() {
+            for (let i = 0; i < 3; i++) {
+                createRow();
+            };
+        };
+        createGrid()
+        
+        let board = gameBoard.getBoard();
+        board.forEach((marker) => {
+            if(marker === "X") {
+                console.log("this spot has a X")
+            } if (marker === "O") {
+                console.log("this spot has a O")
+            } else console.log("this spot is empty")
+        });
+    };
     return {
         render
     };
