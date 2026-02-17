@@ -86,9 +86,9 @@ let display = (function() {
     const header = document.querySelector(".header");
     const gameUi = document.querySelector(".gameUi");
     const reset = document.querySelector(".reset");
+    const displayBoard = document.querySelector(".displayBoard");
     
     let render = () => {
-        
         function createSquare(row, columnNumber, rowNumber) {
             let squareClassNumber = columnNumber * 3 + rowNumber;
             const square = document.createElement("div");
@@ -102,7 +102,9 @@ let display = (function() {
                 } else if (board[squareClassNumber] == "O") {
                     square.style.border = "solid blue 1px";
                     console.log(board[squareClassNumber])
-                }
+                } else {
+                    square.style.border = "solid black 1px";
+                };
             });
 
             square.className = `square${squareClassNumber}`;
@@ -124,8 +126,23 @@ let display = (function() {
                 createRow(rowNumber);
             };
         };
-        createGrid()
+
+        function resetGame() {
+            const button = document.createElement("button");
+            button.textContent = "Reset";
+            displayBoard.appendChild(button);
+            button.addEventListener('click', () => {
+                gameBoard.reset()
+                gameUi.innerHTML = "";
+                displayBoard.removeChild(button);
+                render();
+            });
+        };
+        
+        createGrid();
+        resetGame();
     };
+
     return {
         render
     };
