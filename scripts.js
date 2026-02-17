@@ -83,12 +83,34 @@ let gameController = (function () {
 
 
 let display = (function() {
-    const header = document.querySelector(".header");
-    const gameUi = document.querySelector(".gameUi");
-    const reset = document.querySelector(".reset");
-    const displayBoard = document.querySelector(".displayBoard");
+    const body = document.querySelector("body");
+    body.style.display = "flex";
+    body.style.justifyContent = "center";
+    body.style.alignItems = "center";
+    body.style.flexDirection = "column";
+    body.style.gap = "1rem";
+    body.style.height = "100vh";
+    let header;
+    let gameUi;
     
     let render = () => {
+
+        function createGameHeader() {
+            header = document.createElement("div");
+            header.style.border = "solid black 1px";
+            header.style.width = "100vw"
+            header.style.height = "5rem";
+            body.appendChild(header);
+        };
+
+        function createGameUi() {
+            gameUi = document.createElement("div");
+            gameUi.style.display = "flex";
+            gameUi.style.justifyContent = "center";
+            gameUi.style.alignItems = "center";
+            body.appendChild(gameUi);
+        };
+
         function createSquare(row, columnNumber, rowNumber) {
             let squareClassNumber = columnNumber * 3 + rowNumber;
             const square = document.createElement("div");
@@ -113,6 +135,7 @@ let display = (function() {
             square.style.border = "solid black 1px";
             row.appendChild(square);
         };
+
         function createRow(rowNumber) {
             const row = document.createElement("div");
             row.className = "row";
@@ -121,6 +144,7 @@ let display = (function() {
                 createSquare(row, columnNumber, rowNumber);
             };
         };
+
         function createGrid() {
             for (let rowNumber = 0; rowNumber < 3; rowNumber++) {
                 createRow(rowNumber);
@@ -130,15 +154,20 @@ let display = (function() {
         function resetGame() {
             const button = document.createElement("button");
             button.textContent = "Reset";
-            displayBoard.appendChild(button);
+            body.appendChild(button);
+            button.style.display = "flex";
+            button.style.justifyContent = "center";
+            button.style.alignItems = "center";
             button.addEventListener('click', () => {
                 gameBoard.reset()
-                gameUi.innerHTML = "";
-                displayBoard.removeChild(button);
+                body.removeChild(gameUi);
+                body.removeChild(button);
                 render();
             });
         };
         
+        createGameHeader()
+        createGameUi()
         createGrid();
         resetGame();
     };
