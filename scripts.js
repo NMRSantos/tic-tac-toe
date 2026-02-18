@@ -31,9 +31,9 @@ let gameBoard = (function () {
 
 
 let gameController = (function () {
-    let player1 = createPlayer("Bob", "X");
-    let player2 = createPlayer("Adam", "O");
-    let currentPlayer = player1;
+    let player1;
+    let player2;
+    let currentPlayer;
     let gameOver = false;
 
     const winningCombos = [
@@ -41,6 +41,12 @@ let gameController = (function () {
         [0,3,6], [1,4,7], [2,5,8],
         [0,4,8], [2,4,6]
     ];
+
+    const setPlayer = (name1, name2) => {
+        player1 = createPlayer(name1, "X");
+        player2 = createPlayer(name2, "O")
+        currentPlayer = player1;
+    };
     
     const playTurn = (position) => {
         if(gameOver) return;
@@ -77,7 +83,8 @@ let gameController = (function () {
     };
 
     return {
-        playTurn
+        playTurn,
+        setPlayer
     };
 })();
 
@@ -100,7 +107,38 @@ let display = (function() {
             header.style.border = "solid black 1px";
             header.style.width = "100vw"
             header.style.height = "5rem";
+            header.style.display = "flex"
+            header.style.alignItems = "center";
+            header.style.justifyContent = "center";
+            header.style.gap = "0px 40vw"
             body.appendChild(header);
+
+            let user1 = document.createElement("p");
+            let user2 = document.createElement("p");
+            header.appendChild(user1);
+            header.appendChild(user2);
+
+            let nameInput = document.createElement("input");
+            let currentPlayerSetup = 1;
+            let player1Name = "";
+            let player2Name = "";
+            header.appendChild(nameInput);
+            nameInput.addEventListener("keydown", (e) => {
+                if(e.key == "Enter") {
+                    if(currentPlayerSetup == 1) {
+                        player1Name = nameInput.value;
+                        user1.textContent = nameInput.value;
+                        nameInput.value = "";
+                        currentPlayerSetup++;
+                        
+                    } else if(currentPlayerSetup == 2) {
+                        player2Name = nameInput.value;
+                        user2.textContent = nameInput.value;
+                        header.removeChild(nameInput);
+                    };
+                };
+            });
+
         };
 
         function createGameUi() {
@@ -176,3 +214,5 @@ let display = (function() {
         render
     };
 })();
+
+display.render()
