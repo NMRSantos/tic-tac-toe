@@ -1,4 +1,4 @@
-let createPlayer = function (name, marker) {
+const createPlayer = function (name, marker) {
   return {
     name,
     marker,
@@ -8,7 +8,7 @@ let createPlayer = function (name, marker) {
 let gameBoard = (function () {
     let board = [];
 
-    let initBoard = () => {
+    const initBoard = () => {
         board = ["","","","","","","","",""];
         console.log(board)
     };
@@ -30,7 +30,7 @@ let gameBoard = (function () {
 })();
 
 
-let gameController = (function () {
+const gameController = (function () {
     let player1;
     let player2;
     let currentPlayer;
@@ -50,22 +50,22 @@ let gameController = (function () {
     
     const playTurn = (position) => {
         if(gameOver) return;
-
-        let board = gameBoard.getBoard();
-        if(board[position] === "") {
-            gameBoard.setMark(position, currentPlayer.marker)
-            console.log(board)
-            checkForWin(currentPlayer.marker)
+        if(player1 != undefined && player2 != undefined) {
+            const board = gameBoard.getBoard();
+            if(board[position] === "") {
+                gameBoard.setMark(position, currentPlayer.marker)
+                console.log(board);
+                checkForWin(currentPlayer.marker)
+                if(!gameOver) switchPlayer();
+            };
         };
-
-        if(!gameOver) switchPlayer();
     };
 
     const switchPlayer = () => {
         if (currentPlayer === player1) {
-            currentPlayer = player2
+            currentPlayer = player2;
         } else {
-            currentPlayer = player1
+            currentPlayer = player1;
         };
     };
 
@@ -82,14 +82,23 @@ let gameController = (function () {
         return false;
     };
 
+    const resetState = () => {
+        gameBoard.reset();
+        player1 = undefined;
+        player2 = undefined;
+        currentPlayer = player1;
+        gameOver = false;
+    };
+
     return {
+        resetState,
         playTurn,
         setPlayer
     };
 })();
 
 
-let display = (function() {
+const display = (function() {
     const body = document.querySelector("body");
     body.style.display = "flex";
     body.style.justifyContent = "center";
@@ -100,10 +109,10 @@ let display = (function() {
     let header;
     let gameUi;
     
-    let render = () => {
-
+    const render = () => {
         function createGameHeader() {
             header = document.createElement("div");
+            header.className = "header";
             header.style.border = "solid black 1px";
             header.style.width = "100vw"
             header.style.height = "5rem";
@@ -113,36 +122,37 @@ let display = (function() {
             header.style.gap = "0px 40vw"
             body.appendChild(header);
 
-            let user1 = document.createElement("p");
-            let user2 = document.createElement("p");
-            header.appendChild(user1);
-            header.appendChild(user2);
-
-            let nameInput = document.createElement("input");
+            const nameInput = document.createElement("input");
             let currentPlayerSetup = 1;
-            let player1Name = "";
-            let player2Name = "";
+            let placeholderName1 = "";
+            let placeholderName2 = "";
+            const displayName1 = document.createElement("p");
+            const displayName2 = document.createElement("p");
+
             header.appendChild(nameInput);
             nameInput.addEventListener("keydown", (e) => {
                 if(e.key == "Enter") {
                     if(currentPlayerSetup == 1) {
-                        player1Name = nameInput.value;
-                        user1.textContent = nameInput.value;
+                        placeholderName1 = nameInput.value;
+                        displayName1.textContent = nameInput.value;
                         nameInput.value = "";
                         currentPlayerSetup++;
                         
                     } else if(currentPlayerSetup == 2) {
-                        player2Name = nameInput.value;
-                        user2.textContent = nameInput.value;
+                        placeholderName2 = nameInput.value;
+                        displayName2.textContent = nameInput.value;
+                        header.appendChild(displayName1);
+                        header.appendChild(displayName2);
                         header.removeChild(nameInput);
+                        gameController.setPlayer(placeholderName1, placeholderName2);
                     };
                 };
             });
-
         };
 
         function createGameUi() {
             gameUi = document.createElement("div");
+            gameUi.className = "gameUI";
             gameUi.style.display = "flex";
             gameUi.style.justifyContent = "center";
             gameUi.style.alignItems = "center";
@@ -150,24 +160,35 @@ let display = (function() {
         };
 
         function createSquare(row, columnNumber, rowNumber) {
-            let squareClassNumber = columnNumber * 3 + rowNumber;
+            const rowLenght = 3;
+            const clickedSquare = columnNumber * rowLenght + rowNumber;
+
             const square = document.createElement("div");
+
+            const cross = document.createElement("img");
+            cross.src = "./imgs/cross.svg";
+            cross.style.height = "10rem";
+            cross.style.width = "10rem";
+            const circle = document.createElement("img");
+            circle.src = "./imgs/circle.svg";
+            circle.style.height = "10rem";
+            circle.style.width = "10rem";
             
             square.addEventListener('click', () => {
-                let board = gameBoard.getBoard();
-                gameController.playTurn(squareClassNumber);
-                if(board[squareClassNumber] == "X") {
-                    square.style.border = "solid red 1px"
-                    console.log(board[squareClassNumber]);
-                } else if (board[squareClassNumber] == "O") {
-                    square.style.border = "solid blue 1px";
-                    console.log(board[squareClassNumber])
+                const board = gameBoard.getBoard();
+                gameController.playTurn(clickedSquare);
+                if(board[clickedSquare] == "X") {
+                    square.appendChild(cross);
+                    console.log(board[clickedSquare]);
+                } else if (board[clickedSquare] == "O") {
+                    square.appendChild(circle);
+                    console.log(board[clickedSquare])
                 } else {
                     square.style.border = "solid black 1px";
                 };
             });
 
-            square.className = `square${squareClassNumber}`;
+            square.className = `square${clickedSquare}`;
             square.style.height = "10rem";
             square.style.width = "10rem";
             square.style.border = "solid black 1px";
@@ -197,7 +218,8 @@ let display = (function() {
             button.style.justifyContent = "center";
             button.style.alignItems = "center";
             button.addEventListener('click', () => {
-                gameBoard.reset()
+                gameController.resetState();
+                body.removeChild(header);
                 body.removeChild(gameUi);
                 body.removeChild(button);
                 render();
@@ -215,4 +237,4 @@ let display = (function() {
     };
 })();
 
-display.render()
+display.render();
